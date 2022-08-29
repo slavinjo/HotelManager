@@ -86,7 +86,7 @@ public class RegistrationAndLoginTests
 
         data.Username = "wrong";
         await _api.Request<UserAuthenticationResponse>("/api/v1/users/auth/authenticate", HttpMethod.Post, null, data,
-            HttpStatusCode.Unauthorized);
+            HttpStatusCode.BadRequest);
 
         data.Username = user.Email;
         data.Password = "wrong";
