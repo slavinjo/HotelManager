@@ -53,6 +53,9 @@ public class UserService
 
     public async Task<UserAuthenticationResponse> Authenticate(string email, string password)
     {
+        if(!EmailHelper.IsValidEmail(email))
+            throw new BadRequestException("Invalid email format");
+
         var user = await _context.Users.FirstOrDefaultAsync(e => e.Email == email) ??
                    throw new UnauthorizedException("Invalid username or password");
 
@@ -67,6 +70,9 @@ public class UserService
 
     public async Task<UserAuthenticationResponse> Register(UserRegistrationRequest model)
     {
+        if (!EmailHelper.IsValidEmail(model.Email))
+            throw new BadRequestException("Invalid email format");
+
         var user = await GetUserByEmail(model.Email);
 
         if (user != null)
@@ -161,6 +167,9 @@ public class UserService
 
     public async Task<UserAuthenticationResponse> Activate(UserActivationRequest model)
     {
+        if (!EmailHelper.IsValidEmail(model.Email))
+            throw new BadRequestException("Invalid email format");
+
         var user = await this.GetUserByEmail(model.Email) ?? throw new BadRequestException("user not found");
 
         if (user.ActivatedAt.HasValue)
@@ -182,6 +191,9 @@ public class UserService
 
     public async Task ForgotPassword(ForgotPasswordRequest model)
     {
+        if (!EmailHelper.IsValidEmail(model.Email))
+            throw new BadRequestException("Invalid email format");
+
         var user = await this.GetUserByEmail(model.Email) ?? throw new BadRequestException("user not found");
 
         user.PasswordResetCode = Guid.NewGuid().ToString();
@@ -197,6 +209,9 @@ public class UserService
 
     public async Task ResetPassword(ResetPasswordRequest model)
     {
+        if (!EmailHelper.IsValidEmail(model.Email))
+            throw new BadRequestException("Invalid email format");
+
         var user = await this.GetUserByEmail(model.Email) ?? throw new BadRequestException("user not found");
 
         if (user.PasswordResetCode != model.PasswordResetCode)
